@@ -1,0 +1,31 @@
+name: YouTube Daily Summary Fetcher
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # 매일 UTC 08:00 실행 (한국시간 오후 5시)
+  workflow_dispatch:     # 수동으로 실행할 수도 있게 설정
+
+jobs:
+  fetch_summary:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'   # Python 3.11 버전 사용
+
+      - name: Install dependencies
+        run: |
+          pip install requests feedparser
+
+      - name: Run YouTube Summary Fetcher
+        env:
+          DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
+          DIFY_WORKFLOW_ID: ${{ secrets.DIFY_WORKFLOW_ID }}
+          OUTPUT_DIR: ${{ secrets.OUTPUT_DIR }}
+        run: |
+          python fetch_dify_summary.py
